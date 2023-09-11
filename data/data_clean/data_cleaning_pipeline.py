@@ -9,11 +9,13 @@ class DataCleaner():
                  remove_html=False,
                  remove_newlines=False,
                  remove_spcl_char=False,
+                 remove_spaces=False,
                  deduplication=False):
         self.lowercase = lowercase
         self.remove_html = remove_html
         self.remove_newlines = remove_newlines
         self.remove_spcl_char = remove_spcl_char
+        self.remove_spaces = remove_spaces
         self.deduplication = deduplication
 
     def normalize_data(self, series, columns_to_check):
@@ -34,6 +36,10 @@ class DataCleaner():
             # 删除换行符
             if self.remove_newlines:
                 text = text.replace('\n', '').replace('\r', '')
+
+            # 删除换行符
+            if self.remove_spaces:
+                text = text.replace(' ', '')
 
             # 删除制表符\t、垂直制表符\x0b、换页符\x0c
             if self.remove_spcl_char:

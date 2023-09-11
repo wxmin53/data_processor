@@ -1,7 +1,4 @@
-import json
-import openpyxl
 import pandas as pd
-
 from data.data_source_adapters import FileAdapter
 from data.data_store_adapters import StoreAdapter
 from data.data_clean.data_cleaning_pipeline import DataCleaner
@@ -11,18 +8,18 @@ from data.data_clean.data_cleaning_pipeline import DataCleaner
 输入pandas.core.series.Series，处理后的数据也用yield？
 """
 
-par_file = "/Users/wxm/work/datasets/origin_data/杭州库0824.xlsx"
-store_path = "/Users/wxm/work/datasets/"
-storage_type = "json"
-columns_to_check = ["答案（默认)【富文本】", "答案（杭州)【富文本】", "答案（茂名)【富文本】",
-                    "答案（杭州&默认)【富文本】", "答案（法律法规)【富文本】", "答案（实体机器人)【富文本】"]
+par_file = "/Users/wxm/work/datasets/origin_data/杭州库0908.xlsx"
+store_path = "/Users/wxm/work/datasets/clean_data"
+storage_type = "xlsx"
+columns_to_check = ["答案（默认)【富文本】"]
 
 sa = StoreAdapter(store_path)
 
 dc = DataCleaner(lowercase=True,
                  remove_html=True,
                  remove_newlines=True,
-                 remove_spcl_char=True,
+                 remove_spcl_char=False,
+                 remove_spaces=True,
                  deduplication=True)
 
 # 数据读取和清洗 todo columns_to_check为空时，需要对所有列进行处理

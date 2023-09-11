@@ -19,14 +19,14 @@ class StoreAdapter(object):
 
     def store_data(self, processed_data, storage_type, config):
         if storage_type == "xlsx":
-            workbook = openpyxl.Workbook()
-            sheet = workbook.active
-            sheet.append(["Cleaned Column 1", "Cleaned Column 2", "Cleaned Column 3"])
-
-            for data in processed_data:
-                sheet.append(data)
-
-            workbook.save(os.path.join(self.store_path, file_name + ".xlsx"))
+            processed_data = pd.DataFrame(processed_data)
+            processed_data.to_excel(os.path.join(self.store_path, file_name + ".xlsx"), index=False)
+            # workbook = openpyxl.Workbook()
+            # sheet = workbook.active
+            # sheet.append(["Cleaned Column 1", "Cleaned Column 2", "Cleaned Column 3"])
+            # for data in processed_data:
+            #     sheet.append(data)
+            # workbook.save(os.path.join(self.store_path, file_name + ".xlsx"))
             print("数据已存储为xlsx文件")
 
         elif storage_type == "json":
