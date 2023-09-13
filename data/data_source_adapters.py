@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import xlrd
+# import xlrd
 import mysql.connector
 from elasticsearch import Elasticsearch
 

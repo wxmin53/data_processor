@@ -1,13 +1,10 @@
 import os
-import openpyxl
 import json
 import csv
-import xlrd
 import mysql.connector
 import pandas as pd
 import mysql.connector
-from elasticsearch import Elasticsearch
-from utils import get_current_time
+from tool.utils import get_current_time
 
 cur_time = get_current_time()
 file_name = "processed_data" + cur_time
