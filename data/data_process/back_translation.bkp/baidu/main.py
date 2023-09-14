@@ -6,7 +6,7 @@ import random
 import tqdm
 import collections
 
-from baidu import translate
+from data.data_process.back_translation.baidu import translate
 
 
 translator = translate.Dict()
@@ -54,7 +54,7 @@ def trans(text: str,
 
 def back_translate(text: str,
                    lang_list: Iterable[str],
-                   sleep_mean: float = 1.0,
+                   sleep_mean: float = 2.0,
                    sleep_dev: float = 0.3) -> str:
     """
     调用百度翻译接口进行单次回译。

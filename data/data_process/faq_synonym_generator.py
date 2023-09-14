@@ -1,6 +1,7 @@
 import re
+import json
 from data.data_process.sentence_modifier import *
-from data.data_process.back_translation.back_translate import *
+from data.data_process.back_translation import *
 from data.data_process.gpt_generate import GptRequest
 
 """
@@ -17,7 +18,6 @@ from data.data_process.gpt_generate import GptRequest
 
 # 读数据，通过yield 传递问句
 ca = CharacterAugment()
-
 
 
 def generate_data(batch, prompt):
@@ -63,9 +63,9 @@ def handle_gpt_res(gpt_res):
 def data_augmentation(question, keywords):
     augment_question = [question]
     # 数据回译
-    translate_questions = back_translate("萧山房产去哪里办理？", question, keywords)
+    translate_questions = trans_func(question, keywords)
     augment_question.extend(translate_questions)
-    for qus in translate_questions:
+    for qus in list(set(augment_question)):
         # 字符增减
         if len(qus) > 1:
             charater_question = ca.delete_word(qus, keywords)
@@ -74,8 +74,8 @@ def data_augmentation(question, keywords):
 
 
 def get_faq_synonym_question(data, conf_info):
-    prompt = conf_info["config"]["Gpt"]["faq_synonym_prompt"]
-    batch_size = conf_info["config"]["Gpt"]["faq_synonym_prompt_limit"]
+    prompt = conf_info["config"]["gpt"]["faq_synonym_prompt"]
+    batch_size = conf_info["config"]["gpt"]["faq_synonym_prompt_limit"]
     keywords = conf_info["keywords"]
     batch = []
     new_data = []

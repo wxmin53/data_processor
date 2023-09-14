@@ -2,11 +2,13 @@ from typing import Dict, List, Callable, Any
 import json
 import random
 
+schemas = json.load(open("./data/data_process/back_translation/input/schemas.json", "r"))  # todo 在项目初始化时读取
+
 
 def back_translate(text: str,
-                   schemas: Dict[str, List[List[str]]],
-                   keywords: List[str] = None,
-                   handle_func: Callable[[Dict[str, str]], Any] = lambda x: x) -> Any:
+                   keywords: List[str] = None
+                   ) -> Any:   # schemas: Dict[str, List[List[str]]],
+                               # handle_func: Callable[[Dict[str, str]], Any] = lambda x: x
     """
     输入一句话，使用不同翻译平台、翻译模式（中间语言）进行数据增强，生成多个回复句子。
 
@@ -23,14 +25,15 @@ def back_translate(text: str,
         过滤掉重复的生成结果、改变输出结构、限制最大生成个数、使用匹配模型进行过滤等
     """
     res = {"origin": text}
+    back_trans = []
     for platform, schema_list in schemas.items():
-        trans_func = __import__(f"{platform}.main", fromlist=platform).back_translate
+        trans_func = __import__(f"data.data_process.back_translation.{platform}.main", fromlist=platform).back_translate
         for schema in schema_list:
-            try:
-                schema_key = "->".join(schema)
-                res[f"{platform}    {schema_key}"] = trans_func(text, lang_list=schema)
-            except Exception:
-                pass
+            # try:
+            #     schema_key = "->".join(schema)
+            #     res[f"{platform}    {schema_key}"] = trans_func(text, lang_list=schema)
+            # except Exception:
+            #     pass
 
             if keywords:  # 使用keyword mask
                 keywords = list(set(keywords))  # 过滤重复keywords
@@ -42,11 +45,12 @@ def back_translate(text: str,
                         if "UNK" in back_translate_res or "unk" in back_translate_res:
                             back_translate_res = back_translate_res.replace("UNK", selected_keyword)
                             back_translate_res = back_translate_res.replace("unk", selected_keyword)
-                            res[f"{platform}    {schema_key}    kw_mask{selected_keyword}"] = back_translate_res
-                    except Exception:
-                        pass
+                            # res[f"{platform}    {schema_key}    kw_mask{selected_keyword}"] = back_translate_res
+                            back_trans.append(back_translate_res)
+                    except Exception as e:
+                        print(e)
 
-    return handle_func(res)
+    return list(set(back_trans))
 
 
 def test():

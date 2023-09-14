@@ -6,7 +6,7 @@ import tqdm
 import json
 import collections
 
-from youdao import youdaotrans
+from data.data_process.back_translation.youdao import youdaotrans
 
 
 translator = youdaotrans.Translator()

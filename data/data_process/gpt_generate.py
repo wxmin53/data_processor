@@ -25,3 +25,7 @@ class GptRequest():
                 answer = choices[0].get("message", {}).get("content", '')
                 return answer
         return None
+
+
+if __name__ == "__main__":
+    pass

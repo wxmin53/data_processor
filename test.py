@@ -10,7 +10,7 @@ from data.data_process.faq_synonym_generator import *
 输入pandas.core.series.Series，处理后的数据也用yield？
 """
 
-par_file = "/Users/wxm/work/datasets/clean_data/完整版数据_拆分后.json"
+par_file = "/Users/wxm/work/datasets/clean_data/test_完整版数据_拆分后.json"
 store_path = "/Users/wxm/work/datasets/clean_data"
 storage_type = "xlsx"
 columns_to_check = ["question"]
@@ -28,7 +28,7 @@ dc = DataCleaner(lowercase=True,
 class Cmdline_Send_Tool():
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read('config.ini', encoding="utf-8-sig")
+        config.read('./configure/config.ini', encoding="utf-8-sig")
         keywords = [line.strip() for line in open("./configure/keywords.txt", "r")]
         self.conf_info = {"config": config, "keywords": keywords}
 
