@@ -32,7 +32,8 @@ class CharacterAugment():
         return word_list
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
+    pass
 #     import os
 #
 #     project_directory = os.path.abspath(os.path.join(os.getcwd(), "../.."))

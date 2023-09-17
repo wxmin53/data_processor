@@ -3,21 +3,23 @@ import configparser
 from data.data_source_adapters import FileAdapter
 from data.data_store_adapters import StoreAdapter
 from data.data_clean.data_cleaning_pipeline import DataCleaner
-from data.data_process.faq_synonym_generator import *
+from data.data_process.faq_synonym_generator import SynonymQuestionGenerator
 
 """
 从文件中读取数据后，圈出待清洗和处理的数据
 输入pandas.core.series.Series，处理后的数据也用yield？
 """
 
-par_file = "/Users/wxm/work/datasets/clean_data/test_完整版数据_拆分后.json"
-store_path = "/Users/wxm/work/datasets/clean_data"
-storage_type = "xlsx"
-columns_to_check = ["question"]
+par_file = "/Users/wxm/work/datasets/origin_data/各城市小登FAQ数据集导出/鄂州.xlsx"
+store_path = "/Users/wxm/work/datasets/clean_data/city"
+storage_type = "mysql"
+# storage_type = "xlsx"
+columns_to_check = ["答案（默认)【富文本】"]
 
-sa = StoreAdapter(store_path)
+store_adp = StoreAdapter(store_path)
+sqg = SynonymQuestionGenerator()
 
-dc = DataCleaner(lowercase=True,
+dc = DataCleaner(lowercase=False,
                  remove_html=True,
                  remove_newlines=True,
                  remove_spcl_char=False,
@@ -38,11 +40,12 @@ class Cmdline_Send_Tool():
         processed_data = dc.data_deduplicate(processed_data, columns_to_check)  # 对输入的列columns_to_check去重
 
         # 数据处理
-        processed_data = get_faq_synonym_question(processed_data, self.conf_info)
+        # processed_data = sqg.get_faq_synonym_question(processed_data, self.conf_info)
 
         # 数据存储
-        sa.store_data(processed_data, storage_type, None)
-        print(type(processed_data))
+        name = ""
+        store_adp.store_data(processed_data, storage_type, self.conf_info, name)
+        # print(type(processed_data))
 
 
 if __name__ == "__main__":

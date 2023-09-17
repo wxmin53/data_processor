@@ -1,5 +1,5 @@
 import openpyxl
-# import mysql.connector
+import mysql.connector
 import pandas as pd
 import datetime
 
@@ -53,6 +53,34 @@ class ReadFile():
         #     data = pd.read_excel(file_path, sheet_name=sheet_name)
         return data
 
+
+class DBHandle():
+    def __init__(self):
+        # 连接到 MySQL 数据库
+        self.conn = mysql.connector.connect(
+            host="localhost",
+            port=3306,
+            user="root",
+            password="12345678",
+            database="dashatao"
+        )
+
+    def read_db(self, sql):
+        # 创建一个游标对象，用于执行 SQL 查询
+        cursor = self.conn.cursor()
+
+        # 执行 SQL 查询
+        cursor.execute(sql)
+
+        # 获取查询结果
+        results = cursor.fetchall()
+
+        # 打印查询结果
+        for row in results:
+            print(row)
+
+        # 关闭数据库连接
+        self.conn.close()
 
 # class SaveData():
 #     def __init__(self):
