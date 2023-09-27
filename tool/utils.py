@@ -1,5 +1,5 @@
 import openpyxl
-import mysql.connector
+import pymysql.cursors
 import pandas as pd
 import datetime
 
@@ -55,32 +55,41 @@ class ReadFile():
 
 
 class DBHandle():
-    def __init__(self):
-        # 连接到 MySQL 数据库
-        self.conn = mysql.connector.connect(
-            host="localhost",
-            port=3306,
-            user="root",
-            password="12345678",
-            database="dashatao"
-        )
+    def __init__(self, config):
+        try:
+            self.connection = pymysql.connect(host=config["host"],
+                                              user=config["user"],
+                                              port=3306,
+                                              password=config["password"],
+                                              db=config["database"],
+                                              charset='utf8',
+                                              cursorclass=pymysql.cursors.DictCursor)
+            self.cursor = self.connection.cursor()
+            print("Database connection successful")
+        except pymysql.Error as e:
+            print("Database connection error:", str(e))
 
-    def read_db(self, sql):
-        # 创建一个游标对象，用于执行 SQL 查询
-        cursor = self.conn.cursor()
+    def execute_query(self, query):
+        self.cursor.execute(query)
+        try:
+            data = self.cursor.fetchall()  # chunk_size
+            for chunk in data:
+                if not chunk:
+                    break
+                yield chunk
+        except:
+            print("sql取数失败")
 
-        # 执行 SQL 查询
-        cursor.execute(sql)
+    def execute_sql_many(self, db_connection, sql, xs):
+        re = -1
+        try:
+            re = self.cursor.executemany(sql, xs)
+            if re:
+                db_connection.commit()
+        finally:
+            db_connection.close()
+        return re
 
-        # 获取查询结果
-        results = cursor.fetchall()
-
-        # 打印查询结果
-        for row in results:
-            print(row)
-
-        # 关闭数据库连接
-        self.conn.close()
 
 # class SaveData():
 #     def __init__(self):

@@ -1,7 +1,6 @@
 import os
 import pandas as pd
-# import xlrd
-import mysql.connector
+import pymysql.cursors
 from elasticsearch import Elasticsearch
 
 
@@ -17,8 +16,10 @@ class loadFolders(object):   # 迭代器
 
 
 class FileAdapter(object):
-    def __init__(self, par_file):
+    def __init__(self, par_file=None):
         self.par_file = par_file
+        if not par_file:
+            self.par_file = ""  # todo 读本地文件
 
     def __iter__(self):
         # folders = loadFolders(self.par_path)
@@ -48,24 +49,31 @@ class FileAdapter(object):
 
 
 class DatabaseAdapter:
-    def __init__(self, host, user, password, database):
-        self.connection = mysql.connector.connect(
-            host=host,
-            user=user,
-            password=password,
-            database=database
-        )
-        self.cursor = self.connection.cursor()
+    def __init__(self, config):
+        try:
+            self.connection = pymysql.connect(host=config["host"],
+                                              user=config["user"],
+                                              port=3306,
+                                              password=config["password"],
+                                              db=config["database"],
+                                              charset='utf8',
+                                              cursorclass=pymysql.cursors.DictCursor)
+            self.cursor = self.connection.cursor()
+            print("Database connection successful")
+        except pymysql.Error as e:
+            print("Database connection error:", str(e))
 
     def execute_query(self, query):
+        print(111)
         self.cursor.execute(query)
-        # for row in self.cursor:
-        #     yield row
-        while True:
-            chunk = self.cursor.fetchmany()  # chunk_size
-            if not chunk:
-                break
-            yield pd.DataFrame(chunk, columns=self.cursor.column_names)
+        try:
+            data = self.cursor.fetchall()  # chunk_size
+            for chunk in data:
+                if not chunk:
+                    break
+                yield chunk
+        except:
+            print("sql取数失败")
 
     def close(self):
         self.cursor.close()
@@ -125,4 +133,17 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+
+    config = {'config': {'local_sql': {}}}
+    config['config']['local_sql']['host'] = '192.168.0.10'
+    config['config']['local_sql']['port'] = 3306
+    config['config']['local_sql']['user'] = 'root'
+    config['config']['local_sql']['password'] = 'MdN3mP_w'
+    config['config']['local_sql']['database'] = 'mk_faq'
+    da = DatabaseAdapter(config['config']['local_sql'])
+    sql = 'SELECT question_uuid, question FROM faq_pair WHERE customer_id = 1170  AND status=1'
+
+    for d in da.execute_query(sql):
+        print(d)
+
